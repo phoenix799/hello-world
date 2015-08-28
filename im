@@ -1,0 +1,120 @@
+package com;
+
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.ArrayList;
+
+public class NavalMgmtDAO {
+
+	public int addNavalOfficer(NavalOfficer navalOfficer)
+	{
+		int count=0;
+		try{
+		Class.forName("oracle.jdbc.driver.OracleDriver");
+		Connection connection = DriverManager.getConnection("jdbc:oracle:thin:@172.26.132.40:1521:ORCLILP","aja46core","aja46core");
+		Statement statement=connection.createStatement();
+		NavalOfficer nO=new NavalOfficer();
+		count=statement.executeUpdate("INSERT INTO TBL_OFFICER_962056 (OFFICER_NO, OFFICER_NAME, OFFICER_RANK, OFFICER_SAL, BASE_CAMP_ID) VALUES ("+nO.getOfficerNo()+", '"+nO.getOfficerName()+"', '"+nO.getOfficerRank()+"', "+nO.getOfficerSal()+", "+nO.getBaseCampId()+")");
+} catch (SQLException e) {
+	// TODO Auto-generated catch block
+	e.printStackTrace();
+} catch (ClassNotFoundException e) {
+	// TODO Auto-generated catch block
+	e.printStackTrace();
+}
+		return count;
+	}
+	
+	public int addBaseCamp(BaseCamp baseCamp)
+	{
+		int count=0;
+		try{
+		Class.forName("oracle.jdbc.driver.OracleDriver");
+		Connection connection = DriverManager.getConnection("jdbc:oracle:thin:@172.26.132.40:1521:ORCLILP","aja46core","aja46core");
+		Statement statement=connection.createStatement();
+		BaseCamp bC=new BaseCamp();
+		count=statement.executeUpdate("INSERT INTO AJA46CORE.TBL_BASE_CAMP_962056 (BASE_CAMP_ID, BASE_CAMP_NAME, BASE_CAMP_LOC) VALUES ("+bC.getBaseCampId()+", "+bC.getBaseCampName()+", "+bC.getBaseCampLoc()+")");
+} catch (SQLException e) {
+	// TODO Auto-generated catch block
+	e.printStackTrace();
+} catch (ClassNotFoundException e) {
+	// TODO Auto-generated catch block
+	e.printStackTrace();
+}
+		return count;
+	}
+	public ArrayList<String> getOfficersNameSortedBySal()
+	{
+		ArrayList<String> officersName=new ArrayList<String>();
+		try{
+		Class.forName("oracle.jdbc.driver.OracleDriver");
+		Connection connection = DriverManager.getConnection("jdbc:oracle:thin:@172.26.132.40:1521:ORCLILP","aja46core","aja46core");
+		Statement statement=connection.createStatement();
+		
+		ResultSet rs=statement.executeQuery("SELECT officer_name FROM TBL_OFFICER_962056 ORDER BY OFFICER_SAL");
+		
+		while(rs.next())
+		{
+			officersName.add(rs.getString(1));
+		}
+		
+} catch (SQLException e) {
+	// TODO Auto-generated catch block
+	//e.printStackTrace();
+} catch (ClassNotFoundException e) {
+	// TODO Auto-generated catch block
+//	e.printStackTrace();
+}
+		return officersName;
+	}
+	
+	public ArrayList<String> getOfficersNameForBaseCampLoc(String baseCampLoc)
+	{
+		ArrayList<String> officersName=new ArrayList<String>();
+		try{
+			Class.forName("oracle.jdbc.driver.OracleDriver");
+			Connection connection = DriverManager.getConnection("jdbc:oracle:thin:@172.26.132.40:1521:ORCLILP","aja46core","aja46core");
+			Statement statement=connection.createStatement();
+			
+			ResultSet rs=statement.executeQuery("SELECT officer_name FROM TBL_OFFICER_962056 WHERE BASE_CAMP_ID IN (SELECT base_camp_id FROM TBL_BASE_CAMP_962056 WHERE BASE_CAMP_NAME='"+baseCampLoc+"')");
+			
+			while(rs.next())
+			{
+				officersName.add(rs.getString(1));
+			}
+			
+	} catch (SQLException e) {
+		// TODO Auto-generated catch block
+		//e.printStackTrace();
+	} catch (ClassNotFoundException e) {
+		// TODO Auto-generated catch block
+//		e.printStackTrace();
+	}
+		return officersName;
+	}
+	
+	public double getOfficersTotalSalOnBaseCamp(int baseCampId)
+	{
+		double sum=0;
+		try{
+		Class.forName("oracle.jdbc.driver.OracleDriver");
+		Connection connection = DriverManager.getConnection("jdbc:oracle:thin:@172.26.132.40:1521:ORCLILP","aja46core","aja46core");
+		Statement statement=connection.createStatement();
+		
+		ResultSet rs=statement.executeQuery("SELECT sum(officer_sal) FROM TBL_OFFICER_962056 WHERE BASE_CAMP_ID='"+baseCampId+"'");
+		while(rs.next()){
+			sum=rs.getDouble(1);
+		}
+} catch (SQLException e) {
+	// TODO Auto-generated catch block
+	//e.printStackTrace();
+} catch (ClassNotFoundException e) {
+	// TODO Auto-generated catch block
+	//e.printStackTrace();
+}
+		return sum;
+	}
+}
